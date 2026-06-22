@@ -1,0 +1,243 @@
+<!DOCTYPE html><html><head>
+	<title>Danamon Cash Connect</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="X-Frame-Options" content="deny">
+	<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+	<link href="css/style-fixing.css" rel="stylesheet">
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="css/login02.css" rel="stylesheet">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+
+	<!--[if lte IE 9]>
+	    <script src="js/html5shiv.js"></script>
+	    <script src="js/modernizr.custom.06867.js"></script>
+	    <script type="text/javascript" src="js/jquery.placeholder.min.js"></script>
+    <![endif]-->
+	
+	<style>
+		iframe{ width:100%; margin:0; padding:0; border:0; overflow: hidden!important;}
+	</style>
+<script>bazadebezolkohpepadr="1518541356"</script><script type="text/javascript" src="js/5a831886.js" defer=""></script></head>
+<body>
+    <iframe style="/*overflow:scroll !important;*/ -webkit-overflow-scrolling:touch !important;" class="embed-responsive-item" src="loginrequest.html" name="login" id="login" scrolling="no"></iframe>
+    
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script>
+	    if(top != window) {
+			top.location = window.location;
+		}
+
+        $(window).scroll(function(){
+            $('#wrap2').css('left',-$(window).scrollLeft());
+        });
+
+	    $(window).resize(function() {
+	        var selisihHeight = ((6 * $(window).height())/100);
+	        // console.log($(window).height() + ' :: ' + selisihHeight);
+            // $("iframe").height($(window).height() + selisihHeight);*/
+	    	$("html").height($(window).height());
+	    	$("iframe").height($(window).height());
+
+            resizeIFrame();
+	    });
+	    
+	    $("html").height($(window).height());
+	    $("body").height($(window).height()).addClass('body-login');
+	    $("iframe").height($(window).height());
+	    
+	    $("#login").on('load',function(){
+	    	resumeCacheInit();
+			resizeIFrame();
+		});
+
+        resizeIFrame();
+	    
+	    var bankProfile="";
+	    
+		$.ajaxSetup({
+			cache: true
+		});
+		
+		var customStyleCSS="";
+		var enableJSCache=true;
+		var cachedScript={};
+		
+		function loadJS(url){
+			if(!initCacheComplete) return false;
+			return requestJS(url);
+		}
+
+		function resizeIFrame() {
+            var iFrameDOM = $("iframe").contents();
+            // console.log(iFrameDOM.find("#wrap").height());
+            // iFrameDOM.find("#wrap").height((($(window).height() * 94) / 100) - selisihHeight);
+            // iFrameDOM.find("#wrap").height($(window).height());
+            var currentFrame = ($(window).height() * 94) / 100;
+            var remainingFrame = 850 - currentFrame < 0 ? 0 : (850 - currentFrame) / 20
+            iFrameDOM.find("#wrap").height(currentFrame - remainingFrame - 1);
+            iFrameDOM.find("#wrap").height(currentFrame - remainingFrame - 1);
+            iFrameDOM.find("#wrap").height(currentFrame - remainingFrame - 1);
+            if (remainingFrame > 21) {iFrameDOM.find("#login1").css({"float":"left","width":"33.3333333%"});iFrameDOM.find("#login2").css({"float":"left","width":"33.3333333%"});iFrameDOM.find("#login3").css({"float":"left","width":"33.3333333%"});}
+		}
+
+
+        function requestJS(url){
+			if(!enableJSCache) return false;
+			var js = cachedScript[url];
+			if(typeof js === 'undefined'){
+				$.ajax({
+				    url: url,
+				    dataType: 'text',
+				    success: function(data) {
+				    	cachedScript[url] = data;
+				    },
+				    complete: function(jqXHR, textStatus){
+				    	isInitBusy = false;
+				    }
+				});
+				return false;
+			}else{
+				isInitBusy = false;
+				return js;
+			}
+		}
+		
+		function loadCSS(url){
+			if(!initCacheComplete) return false;
+			return requestCSS(url);
+		}
+		
+		function requestCSS(url, context, locationOrigin){
+			if(!enableJSCache) return false;
+			var css = cachedScript[url];
+			if(typeof css === 'undefined'){
+				$.ajax({
+				    url: url,
+				    dataType: 'text',
+				    success: function(data) {
+				    	cachedScript[url] = fixCSSUrl(data, context, locationOrigin, url);
+				    },
+				    complete: function(jqXHR, textStatus){
+				    	isInitBusy = false;
+				    }
+				});
+				return false;
+			}else{
+				isInitBusy = false;
+				return css;
+			}
+		}
+		
+		function fixCSSUrl(css, context, locationOrigin, url){
+			var pos = 0;
+		    while(true){
+		      pos = css.indexOf("url(", pos);
+		      if(pos == -1) return(css);
+		      pos += 5;
+		      if(css.slice(pos-1, pos) == "'" || css.slice(pos-1, pos) == '"'){
+		    	  css = [css.slice(0, pos), locationOrigin, context, url.substr(0, url.lastIndexOf("/")), "/", css.slice(pos)].join('');     
+		   	  }else{
+		    	  css = [css.slice(0, pos-1), locationOrigin, context, url.substr(0, url.lastIndexOf("/")), "/", css.slice(pos-1)].join('');
+		      }
+		    }
+		}
+		
+		function initCSS(url){
+			var context = "";
+		    if(url.substr(0,3).indexOf("../") != -1){
+		    	context = window.location.pathname.substr(0,window.location.pathname.lastIndexOf("/")) + "/"; 
+		    }
+		    var pathArray = location.href.split( '/' );
+			var protocol = pathArray[0];
+			var host = pathArray[2];
+			var locationOrigin = protocol + '//' + host;
+			loadCSS(url,context,locationOrigin);
+		}
+		
+		var preloadCssList =[
+								"/common2/css/jquery-ui.css",
+								"/common2/css/opa-icons.css",
+								"/common2/css/bootstrap.css",
+								"/common/css/bootstrap-responsive.css",
+								"/common/css/bootstrap-custom.css",
+								"/common2/css/bootstrap.min.css",
+								"/css/primecash.css",
+								"/common2/css/primecash-themes.css",
+								"/common/css/datatables/table.css",
+								"/common/css/select2/select2.css",
+								"/common/css/select2/select2-custom.css",
+								"/css/plugins/icons/style2.css"
+		             		];
+		
+		var preloadJsList = [
+								"/common2/js/jquery-1.11.1.min.js",
+								"/common2/js/jquery-ui.custom.min.js",
+								"/common2/js/bootstrap.js",
+								"/common2/js/global.js",
+								"/common2/js/accounting.js",
+								"/common2/js/globalbank02.js",
+								"/common2/js/jquery.validate.js",
+								"/common2/js/footer.js",
+								"/common2/js/pdf/css-embedder.js",
+								"/common2/js/pdf/leger-pdf.js",
+								"/common2/js/select2/select2.min.js",
+								"/common/js/datatables/jquery.dataTables.js",
+								"/common/js/datatables/dataTablesExtend.js",
+								"/common/js/datatables/jquery.dataTables.rowGrouping.js",
+								"/common/js/datatables/jquery.dataTables.rowspan-custom.js"
+							];
+
+		var isInitBusy = false;
+		var isInitPause = false;
+		var initCounter = 0;
+		var initTimer;
+		var initCacheComplete = false;
+        localStorage.setItem("initCacheComplete", 'false');
+        localStorage.setItem("resourceSize",(preloadCssList.length + preloadJsList.length));
+		function initCache(init){
+			if(!init || typeof initTimer !== 'undefined') return;
+			enableJSCache = init;
+			initTimer = setInterval(function(){
+				if(isInitBusy || isInitPause) return;
+				if(initCounter >= preloadCssList.length + preloadJsList.length){
+					clearInterval(initTimer);
+					initCacheComplete = true;
+                    localStorage.setItem("initCacheComplete", 'true');
+					return;
+				}
+				
+				isInitBusy = true;
+				if(initCounter >=  preloadCssList.length){
+					requestJS(preloadJsList[initCounter++ - preloadCssList.length]);
+				}else{
+					requestCSS(preloadCssList[initCounter++]);
+				}
+                localStorage.setItem("initDownload", initCounter);
+			}, 1);
+		}
+		
+		function pauseCacheInit(){
+			isInitPause = true;
+		}
+		
+		function resumeCacheInit(){
+			isInitPause = false;
+		}
+		
+		$(window).unload(function() {
+    		$.ajax({ "dataType": 'json', "type": "GET", "cache": false, async: false, "url": '/loginfo/logoutURL' });
+		});
+	</script>
+	
+	<!--[if lte IE 9]>
+	    <script>
+	    	$("#login").on('load',function(){
+		        $($(top.frames[0].document).find('input,textarea')).placeholder();
+		    });
+	    </script>
+    <![endif]-->
+<noscript><img src="https://cashconnect.danamon.co.id/akam/13/pixel_5a831886?a=dD05MDEyOGNhM2Y1ZjI0YWNhZjI2ODZjNmQ4Y2NlOTlmMjVmMTQ5ODNlJmpzPW9mZg==" style="visibility: hidden; position: absolute; left: -999px; top: -999px;" /></noscript>
+
+</body></html>

